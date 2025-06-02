@@ -3,6 +3,8 @@
 #include <Adafruit_BME680.h>
 #include <BH1750.h>
 #include <array>
+#include <DueTimer.h>
+
 
 // ?! -> Get Address
 // aAb! change address a to address b
@@ -16,18 +18,31 @@
 
 // //BH1750 Setup
 // BH1750 lightMeter(0x23);
+#define BTN_SELECT 4
+
+int TIMER_FREQ = 1; // 1s / timer_freq
 
 //SDI-12 Setup
+
 #define DIRO 7
 std::array<float, 10> get_data();
 String command;
 char deviceAddress = '0';
 String deviceIdentification = "ENG20009";
 
+bool timer_running = false;
+
 void setup() {
   //Arduino IDE Serial Monitor
+  // Interrupts to just wreck everything idk why
+  // Timer3.attachInterrupt(timer_inter);
+  // attachInterrupt(BTN_SELECT, button_inter, RISING);
   Serial.begin(9600);
   sensor_setup();
+  lcd_setup();
+
+  
+  
   // ================ BME680 ================
   // if (!bme.begin(0x76)) {
   //   Serial.println("Could not find a valid BME680 sensor, check wiring!");
@@ -43,7 +58,7 @@ void setup() {
   // Wire.begin();
   // lightMeter.begin();
 
-
+  
   // ================ SDI-12 ================
   Serial1.begin(1200, SERIAL_7E1);  //SDI-12 UART, configures serial port for 7 data bits, even parity, and 1 stop bit
   pinMode(DIRO, OUTPUT);               //DIRO Pin
@@ -52,8 +67,19 @@ void setup() {
   digitalWrite(DIRO, HIGH);
 }
 
+void timer_inter() {
+  Serial.println("Check");
+  SDI12Receive("0R!");
+}
+
+void button_inter() {
+  SDI12Send("Menu Selected");
+  Serial.println("Interupt?");
+}
+
 void loop() {
   sdi_loop();
+  lcd_loop();
   
 }
 
@@ -77,14 +103,16 @@ void sdi_loop() {
 float data[10] = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0 -1.0};
 float time_spent;
 int num_data = 0;
+
+
+
 void SDI12Receive(String input) {
   int input_length = input.length();
   Serial.println("Recieved Input: " + input);
   if (input.charAt(0) == '?') {
     SDI12Send(String(deviceAddress)); // Return the device address
-  } else if (input.charAt(0) == deviceAddress) { 
+  } else if (String(input.charAt(0)) == String(deviceAddress)) { 
     // Check if this device matches the adderss being addressed
-
     if (input.charAt(1) == 'A') { 
       deviceAddress = input.charAt(2);
       SDI12Send(String(deviceAddress));
@@ -140,6 +168,19 @@ void SDI12Receive(String input) {
         // Send the return_string
       }
       SDI12Send(return_string);
+    }
+    if (input.charAt(1) == 'T') {
+      if (timer_running) {
+        // Timer3.stop();
+        timer_running = false;
+        SDI12Send("STOP TIMED SEND");
+      } else {
+        Serial.println("Start TImer");
+        // Timer3.start(10000);
+        timer_running = true;
+        SDI12Send("START TIMED SEND");
+      }
+      SDI12Send("TIMER does NOT work");
     }
   }
 }

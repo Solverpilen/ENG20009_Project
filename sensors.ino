@@ -4,19 +4,12 @@
 #include <BH1750.h>
 #include <array>
 
-// Define possible addresses
-#define BME_ADDR1 0x76
-#define BME_ADDR2 0x77
-#define BH1750_ADDR1 0x23
-#define BH1750_ADDR2 0x5C
+// // Define possible addresses
+// #define BME_ADDR1 0x76
+// #define BME_ADDR2 0x77
+// #define BH1750_ADDR1 0x23
+// #define BH1750_ADDR2 0x5C
 
-Adafruit_BME280 bme280;
-BH1750 lightMeter;
-
-
-
-bool detectedBME280 = false;
-bool detectedBH1750 = false;
 
 void sensor_setup() {
   Serial.begin(9600);

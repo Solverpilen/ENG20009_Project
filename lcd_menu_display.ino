@@ -54,7 +54,7 @@ String menuOptions[menuLength] = {
   "Light"
 };
 
-void setup() {
+void lcd_setup() {
   Serial.begin(9600);
   Wire.begin();
 
@@ -74,7 +74,7 @@ void setup() {
   drawMenu();
 }
 
-void loop() {
+void lcd_loop() {
   // Menu navigation
   if (digitalRead(BTN_UP) == LOW) {
     menuIndex = (menuIndex - 1 + menuLength) % menuLength;
