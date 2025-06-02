@@ -60,7 +60,7 @@ float return_bh1_data() {
   }
 }
 
-std::array<float, 5> get_data() { 
+std::array<float, 10> get_data() { 
   if (detectedBME280) {
     float temp = bme280.readTemperature();
     float hum = bme280.readHumidity();
@@ -68,12 +68,12 @@ std::array<float, 5> get_data() {
     // Serial.print("Temp: "); Serial.print(temp); Serial.print(" °C, ");
     // Serial.print("Humidity: "); Serial.print(hum); Serial.print(" %, ");
     // Serial.print("Pressure: "); Serial.print(pres); Serial.println(" hPa");
-    return {temp, hum, pres, -1.0, -1.0};  // Return all BME280 data
+    return {temp, hum, pres, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0};  // Return all BME280 data
   }
   else if (detectedBH1750) {
     float lux = lightMeter.readLightLevel();
     // Serial.print("Light: "); Serial.print(lux); Serial.println(" lx");
-    return {lux, -1.0, -1.0, -1.0, -1.0}; // Return lux
+    return {lux, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0}; // Return lux
   }
   
   delay(1000);
